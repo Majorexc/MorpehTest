@@ -13,10 +13,12 @@ using Unity.IL2CPP.CompilerServices;
 public sealed class ScrollWindowsSystem : UpdateSystem {
     Filter _scrollRectFilter;
     Filter _windowsFilter;
+    Filter _buttonFilter;
 
     public override void OnAwake() {
         _scrollRectFilter = World.Filter.With<MainScrollComponent>();
         _windowsFilter = World.Filter.With<MainWindowComponent>();
+        _buttonFilter = World.Filter.With<MainButtonComponent>();
     }
 
     public override void OnUpdate(float deltaTime) {
@@ -25,7 +27,7 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
             if (scrollRectComponent.EndDragGlobal) {
                 var rectPos = scrollRectComponent.ScrollRect.horizontalNormalizedPosition;
                 var nearestPos = 1f;
-                var nearestId = 0f;
+                var nearestId = 0;
                 foreach (var windowEntity in _windowsFilter) {
                     var window = windowEntity.GetComponent<MainWindowComponent>();
                     var position = window.Index / ((float)_windowsFilter.Length - 1);
@@ -37,6 +39,7 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
 
                 var pos = nearestId / ((float)_windowsFilter.Length - 1);
                 scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
+                SwitchButton(nearestId);
             }
         }
 
@@ -47,7 +50,19 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
                     ref var scrollRectComponent = ref rectEntity.GetComponent<MainScrollComponent>();
                     var pos = window.Index / ((float) _windowsFilter.Length - 1);
                     scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
+                    SwitchButton(window.Index);
                 }
+            }
+        }
+    }
+
+    void SwitchButton(int index) {
+        foreach (var buttonEntity in _buttonFilter) {
+            var button = buttonEntity.GetComponent<MainButtonComponent>();
+            if (button.Index == index) {
+                button.Button.interactable = false;
+            } else {
+                button.Button.interactable = true;
             }
         }
     }
