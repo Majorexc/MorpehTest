@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 
+using DG.Tweening;
+
 using Morpeh;
 using Morpeh.UI.Components;
 
@@ -23,7 +25,7 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
 
     public override void OnUpdate(float deltaTime) {
         foreach (var entity in _scrollRectFilter) {
-            ref var scrollRectComponent = ref entity.GetComponent<MainScrollComponent>();
+            var scrollRectComponent = entity.GetComponent<MainScrollComponent>();
             if (scrollRectComponent.EndDragGlobal) {
                 var rectPos = scrollRectComponent.ScrollRect.horizontalNormalizedPosition;
                 var nearestPos = 1f;
@@ -38,7 +40,11 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
                 }
 
                 var pos = nearestId / ((float)_windowsFilter.Length - 1);
-                scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
+                DOTween.Kill(this);
+                DOTween.To(() => scrollRectComponent.ScrollRect.horizontalNormalizedPosition,
+                    x => scrollRectComponent.ScrollRect.horizontalNormalizedPosition = x,
+                    pos, 0.5f).SetId(this);
+                // scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
                 SwitchButton(nearestId);
             }
         }
@@ -47,15 +53,19 @@ public sealed class ScrollWindowsSystem : UpdateSystem {
             ref var window = ref windowEntity.GetComponent<MainWindowComponent>();
             if (window.OpenEvent) {
                 foreach (var rectEntity in _scrollRectFilter) {
-                    ref var scrollRectComponent = ref rectEntity.GetComponent<MainScrollComponent>();
+                    var scrollRectComponent = rectEntity.GetComponent<MainScrollComponent>();
                     var pos = window.Index / ((float) _windowsFilter.Length - 1);
-                    scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
+                    DOTween.Kill(this);
+                    DOTween.To(() => scrollRectComponent.ScrollRect.horizontalNormalizedPosition,
+                        x => scrollRectComponent.ScrollRect.horizontalNormalizedPosition = x,
+                        pos, 0.5f).SetId(this);
+                    // scrollRectComponent.ScrollRect.horizontalNormalizedPosition = pos;
                     SwitchButton(window.Index);
                 }
             }
         }
     }
-
+    
     void SwitchButton(int index) {
         foreach (var buttonEntity in _buttonFilter) {
             var button = buttonEntity.GetComponent<MainButtonComponent>();
