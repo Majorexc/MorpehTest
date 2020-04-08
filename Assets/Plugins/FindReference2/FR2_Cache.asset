@@ -821,13 +821,6 @@ MonoBehaviour:
       ids: 73000000
     - guid: 67f5c9835fe4b42a28cc01db530f342d
       ids: 72000000
-  - guid: 02a3527b6b33a924e8ec66aa805ea717
-    loadInfoTS: 0
-    stamp: 1586188989
-    type: 1
-    UseGUIDsList:
-    - guid: be76e5f14cfee674cb30b491fb72b09b
-      ids: 
   - guid: b9549ed3c9a5549cda84b405e44abcb9
     loadInfoTS: 0
     stamp: 1586252915
@@ -837,11 +830,6 @@ MonoBehaviour:
       ids: 
     - guid: 35a721eae1cdbe647a086ad29a339fef
       ids: 
-  - guid: be76e5f14cfee674cb30b491fb72b09b
-    loadInfoTS: 0
-    stamp: 1579612770
-    type: 2
-    UseGUIDsList: []
   - guid: 407bc68d299748449bbf7f48ee690f8d
     loadInfoTS: 0
     stamp: 0
@@ -1586,6 +1574,11 @@ MonoBehaviour:
     loadInfoTS: 0
     stamp: 0
     type: 2
+    UseGUIDsList: []
+  - guid: e243409c5885e4b5c99d747b427896ce
+    loadInfoTS: 0
+    stamp: 0
+    type: 1
     UseGUIDsList: []
   priority: 3
   setting:
