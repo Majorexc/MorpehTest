@@ -17,14 +17,11 @@ public sealed class ArmorySystem : UpdateSystem {
     [SerializeField] GameObject _armoryItemPrefab = default;
 
     Filter _containerFilter;
-    Filter _armoryItemsFilter;
     
     public override void OnAwake() {
         Debug.Assert(_config != null && _config.Items.Length > 0, $"[{GetType()}] {nameof(ArmoryConfig)} not assigned or empty");
 
         _containerFilter = World.Filter.With<ArmoryContainerComponent>();
-        _armoryItemsFilter = World.Filter.With<ArmoryItemComponent>();
-
 
         foreach (var containerEntity in _containerFilter) {
             var parent = containerEntity.GetComponent<ArmoryContainerComponent>().ContainerParent;
@@ -33,7 +30,6 @@ public sealed class ArmorySystem : UpdateSystem {
                 var itemEntity = World.CreateEntity();
                 ref var itemComponent = ref itemEntity.AddComponent<ArmoryItemComponent>();
                 var armoryGlobal = CreateInstance<GlobalEventObject>();
-                // armoryGlobal.Value = Instantiate(item);
                 itemComponent.Event = armoryGlobal;
                 visual.GetComponentInChildren<TextMeshProUGUI>().text = item.Name;
                 visual.GetComponent<Button>().onClick.AddListener(()=>armoryGlobal.Publish(item));
@@ -42,11 +38,6 @@ public sealed class ArmorySystem : UpdateSystem {
     }
 
     public override void OnUpdate(float deltaTime) {
-        foreach (var armoryEntity in _armoryItemsFilter) {
-            var item = armoryEntity.GetComponent<ArmoryItemComponent>();
-            if (item.Event.IsPublished) {
-                Debug.Log(item.Event.BatchedChanges.Peek());
-            }
-        }   
+        // Handle changes
     }
 }
