@@ -26,15 +26,21 @@ public sealed class ArmorySystem : UpdateSystem {
         foreach (var containerEntity in _containerFilter) {
             var parent = containerEntity.GetComponent<ArmoryContainerComponent>().ContainerParent;
             foreach (var item in _config.Items) {
-                var visual = Instantiate(_armoryItemPrefab, parent);
-                var itemEntity = World.CreateEntity();
-                ref var itemComponent = ref itemEntity.AddComponent<ArmoryItemComponent>();
-                var armoryGlobal = CreateInstance<GlobalEventObject>();
-                itemComponent.Event = armoryGlobal;
-                visual.GetComponentInChildren<TextMeshProUGUI>().text = item.Name;
-                visual.GetComponent<Button>().onClick.AddListener(()=>armoryGlobal.Publish(item));
+               CreateNewItem(item, parent);
             }
         }
+    }
+
+    void CreateNewItem(ArmoryItem item, Transform parent) {
+        var itemEntity = World.CreateEntity();
+        
+        ref var itemComponent = ref itemEntity.AddComponent<ArmoryItemComponent>();
+        var armoryGlobal = CreateInstance<GlobalEventObject>();
+        itemComponent.Event = armoryGlobal;
+        
+        var visual = Instantiate(_armoryItemPrefab, parent);
+        visual.GetComponentInChildren<TextMeshProUGUI>().text = item.Name;
+        visual.GetComponent<Button>().onClick.AddListener(() => armoryGlobal.Publish(item));
     }
 
     public override void OnUpdate(float deltaTime) {

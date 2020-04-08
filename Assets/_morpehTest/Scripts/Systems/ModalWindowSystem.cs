@@ -13,12 +13,13 @@ public sealed class ModalWindowSystem : UpdateSystem {
     Filter _modalWindowFilter;
 
     const float FADING_DURATION = 0.5f;
+    const string ITEM_EQUIPPED_TEXT = "Item equipped!";
     
     public override void OnAwake() {
         _armoryItemsFilter = World.Filter.With<ArmoryItemComponent>();
         _modalWindowFilter = World.Filter.With<ModalWindowComponent>();
         
-        Hide();
+        HideAll();
     }
 
     public override void OnUpdate(float deltaTime) {
@@ -26,7 +27,7 @@ public sealed class ModalWindowSystem : UpdateSystem {
             var item = armoryEntity.GetComponent<ArmoryItemComponent>();
             if (item.Event.IsPublished) {
                 var obj = item.Event.BatchedChanges.Peek() as ArmoryItem;
-                Show("Item equipped!", obj.Name);
+                Show(ITEM_EQUIPPED_TEXT, obj.Name);
             }
         } 
         
@@ -37,9 +38,9 @@ public sealed class ModalWindowSystem : UpdateSystem {
         foreach (var windowEntity in _modalWindowFilter) {
             ref var component = ref windowEntity.GetComponent<ModalWindowComponent>();
             if (component.IsShowing) {
-                if (Time.time - component.LastShowTimestamp > component.AutohideDuration) {
+                var isReadyToHide = Time.time - component.LastShowTimestamp > component.AutohideDuration;
+                if (isReadyToHide)
                     HideComponent(ref component);
-                }
             }
         }
     }
@@ -50,10 +51,9 @@ public sealed class ModalWindowSystem : UpdateSystem {
         component.IsShowing = false;
     }
     
-    void Hide() {
+    void HideAll() {
         foreach (var windowEntity in _modalWindowFilter) {
-            ref var component = ref windowEntity.GetComponent<ModalWindowComponent>();
-            HideComponent(ref component);
+            HideComponent(ref windowEntity.GetComponent<ModalWindowComponent>());
         }
     }
 
@@ -68,6 +68,4 @@ public sealed class ModalWindowSystem : UpdateSystem {
             component.IsShowing = true;
         }
     }
-
-
 }
